@@ -2,20 +2,20 @@
 
 
 [1] To compile and run the iothub server, download the code to a raspberry pi
-	-  
+-  
 
 
 [2] To compile and run the thermocouple code in src/thermocouple one needs the arduino IDE with esp8266 board support.
 
-	- Regularly wakes up from deep sleep (ideally) to report the thermocouple value to the server
+- Regularly wakes up from deep sleep (ideally) to report the thermocouple value to the server
 
 
 ### Raspberry pi zero OS headless setup:
-	- Download the Lite image. Flash it to the SD card using Raspberry Pi Imager
-	- Remove card and re-insert to mount it on the host OS. There should be 2 partitions `boot` and `rootfs`
-	- Create / touch a file called `ssh` in the rootfs root dir
-	- Create a file called `wpa_supplicant.conf` in the rootfs root dir with the following:
-		```
+- Download the Lite image. Flash it to the SD card using Raspberry Pi Imager
+- Remove card and re-insert to mount it on the host OS. There should be 2 partitions `boot` and `rootfs`
+- Create / touch a file called `ssh` in the rootfs root dir
+- Create a file called `wpa_supplicant.conf` in the rootfs root dir with the following:
+```
 country=US
 ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
 update_config=1
@@ -27,7 +27,7 @@ psk="123456"
 key_mgmt=WPA-PSK
 }
 
-		```
+```
 	- Change hostname in `etc/hostname` to `iothub`
 	- Change the default password on the `pi` user
 	- Setup password-less login by copying the host public key in `home/pi/.ssh/authorized_keys`
