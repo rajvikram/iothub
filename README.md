@@ -28,10 +28,10 @@ key_mgmt=WPA-PSK
 }
 
 ```
-	- Change hostname in `etc/hostname` to `iothub`
-	- Change the default password on the `pi` user
-	- Setup password-less login by copying the host public key in `home/pi/.ssh/authorized_keys`
-	- Turn off the power management on the wifi by backing up the `etc/network/interfaces` and then copying the following in there:
+- Change hostname in `etc/hostname` to `iothub`
+- Change the default password on the `pi` user
+- Setup password-less login by copying the host public key in `home/pi/.ssh/authorized_keys`
+- Turn off the power management on the wifi by backing up the `etc/network/interfaces` and then copying the following in there:
 ```
 auto lo
 
@@ -45,11 +45,11 @@ wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf
 wireless-power off
 iface default inet dhcp
 ``` 
-	Confirm power mangement is off in the `iwconfig` listing
-	- For stable ssh connection, add the following to `etc/ssh/sshd_config`. Some home routes apparently have a QoS issue with ssh packets. 
+Confirm power mangement is off in the `iwconfig` listing
+- For stable ssh connection, add the following to `etc/ssh/sshd_config`. Some home routes apparently have a QoS issue with ssh packets. 
 ```
 IPQoS cs0 cs0
 ```
-	- Eject SD card from host and boot Pi Zero with it. You should be able to `ssh pi@iothub.local` and get a responsive console
+- Eject SD card from host and boot Pi Zero with it. You should be able to `ssh pi@iothub.local` and get a responsive console
 
 
