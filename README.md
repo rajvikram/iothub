@@ -49,6 +49,7 @@ IPQoS cs0 cs0
 #### [2] To compile and run the thermocouple code in src/thermocouple one needs the arduino IDE with esp8266 board support.
 - Configure the Arduino IDE to support the ESP8266 board and install the following dep libraries
 	- Adafruit MAX31856 
+	- Influxdb client (v3.x)
 - Configure your Wifi SSID and password in your env variables, DEVSSID and DEVPSK
 - Configure the iothub server address correctly. 
 - Compile and run the code on the board.

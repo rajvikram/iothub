@@ -6,18 +6,25 @@
 #include <ESP8266WiFi.h>
 #include <SPI.h>
 #include "Adafruit_MAX31856.h"
+#include "InfluxDb.h"
 
 #ifndef DEVSSID
 #define DEVSSID "your-ssid"
 #define DEVPSK  "your-password"
 #endif
 
+// How frequently will this device update it's data  
+#define DEV_LOOP_DELAY  5000 
+
 const char* ssid     = DEVSSID;
 const char* ssid_pass = DEVPSK;
-const char* iothub_addr = "192.168.2.120"
-const int iothub_influx_port = 8086
+
+const char* influxdb_url = "http://192.168.2.120:8086";
+const char* influxdb_db = "iot";
 
 WiFiClient net;
+// Single InfluxDB instance
+InfluxDBClient influxdb_client(influxdb_url, influxdb_db);
 
 unsigned long lastMillis = 0;
 
@@ -39,12 +46,12 @@ void setup() {
 
 void loop() {
 
-  float cjTemp, thTemp;
+  float cjTemp, hjTemp;
 
   // Get both cold junction and thermocouple temperatures
   cjTemp = cToF(maxim.readCJTemperature());
-  thTemp = cToF(maxim.readThermocoupleTemperature());
-  Serial.printf("\nCold Junction Temp: %f, Thermocouple Temp : %f", cjTemp, thTemp);
+  hjTemp = cToF(maxim.readThermocoupleTemperature());
+  Serial.printf("\nCold Junction Temp: %f, Thermocouple Temp : %f", cjTemp, hjTemp);
 
   // Check and print any faults
   uint8_t fault = maxim.readFault();
@@ -58,20 +65,22 @@ void loop() {
     if (fault & MAX31856_FAULT_OVUV)    Serial.println("Over/Under Voltage Fault");
     if (fault & MAX31856_FAULT_OPEN)    Serial.println("Thermocouple Open Fault");
   }
-  delay(5000);
 
-//  client.loop();
-//  delay(10);  // <- fixes some issues with WiFi stability
-//
-//  if (!client.connected()) {
-//    connect();
-//  }
-//
-//  // publish a message roughly every second.
-//  if (millis() - lastMillis > 1000) {
-//    lastMillis = millis();
-//    client.publish("/temperature", String(maxim.readThermocoupleTemperature()));
-//  }
+  // Now that we have the data, send it to influxdb
+  Point deviceData("temperature");
+  // Set tags
+  deviceData.addTag("device", "solar_oven");
+  
+  // Add data
+  deviceData.addField("cold", cjTemp);
+  deviceData.addField("hot", hjTemp);
+  
+  // Write data
+  influxdb_client.writePoint(deviceData);
+  
+  delay(DEV_LOOP_DELAY);
+
+
 }
 
 float cToF(float c) {
