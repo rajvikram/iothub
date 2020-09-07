@@ -14,13 +14,15 @@
 
 const char* ssid     = DEVSSID;
 const char* ssid_pass = DEVPSK;
+const char* iothub_addr = "192.168.2.120"
+const int iothub_influx_port = 8086
 
 WiFiClient net;
 
 unsigned long lastMillis = 0;
 
 // Use software SPI: CS, DI, DO, CLK
-Adafruit_MAX31856 maxim = Adafruit_MAX31856(15, 13, 12,14);
+Adafruit_MAX31856 maxim = Adafruit_MAX31856(15, 13, 12, 14);
 // use hardware SPI, just pass in the CS pin
 //Adafruit_MAX31856 maxim = Adafruit_MAX31856(15);
 
@@ -28,13 +30,6 @@ void setup() {
   Serial.begin(115200);
 
    WiFi.begin(ssid, ssid_pass);
-
-  // Note: Local domain names (e.g. "Computer.local" on OSX) are not supported by Arduino.
-  // You need to set the IP address directly.
-//  client.begin("[B]192.168.2.28[/B]", 1883, net);
-//  client.onMessage(messageReceived);
-//
-//  connect();
 
   Serial.println("MAX31856 thermocouple test");
   maxim.begin();
@@ -63,7 +58,7 @@ void loop() {
     if (fault & MAX31856_FAULT_OVUV)    Serial.println("Over/Under Voltage Fault");
     if (fault & MAX31856_FAULT_OPEN)    Serial.println("Thermocouple Open Fault");
   }
-  delay(600000);
+  delay(5000);
 
 //  client.loop();
 //  delay(10);  // <- fixes some issues with WiFi stability

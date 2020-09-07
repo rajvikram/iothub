@@ -1,16 +1,9 @@
 ### This repo implements a smart hub on a Raspberry Pi Zero with a thermocouple sensor on a ESP8266 board. 
 
 
-[1] To compile and run the iothub server, download the code to a raspberry pi
--  
+#### [1] The devices are supposed to connect to an influx/Grafana hub. This can be run on a Raspberry pi which can be configured as follows
 
-
-[2] To compile and run the thermocouple code in src/thermocouple one needs the arduino IDE with esp8266 board support.
-
-- Regularly wakes up from deep sleep (ideally) to report the thermocouple value to the server
-
-
-### Raspberry pi zero OS headless setup:
+Raspberry pi zero OS headless setup:
 - Download the Lite image. Flash it to the SD card using Raspberry Pi Imager
 - Remove card and re-insert to mount it on the host OS. There should be 2 partitions `boot` and `rootfs`
 - Create / touch a file called `ssh` in the rootfs root dir
@@ -51,5 +44,14 @@ Confirm power mangement is off in the `iwconfig` listing
 IPQoS cs0 cs0
 ```
 - Eject SD card from host and boot Pi Zero with it. You should be able to `ssh pi@iothub.local` and get a responsive console
+
+
+#### [2] To compile and run the thermocouple code in src/thermocouple one needs the arduino IDE with esp8266 board support.
+- Configure the Arduino IDE to support the ESP8266 board and install the following dep libraries
+	- Adafruit MAX31856 
+- Configure your Wifi SSID and password in your env variables, DEVSSID and DEVPSK
+- Configure the iothub server address correctly. 
+- Compile and run the code on the board.
+
 
 
