@@ -4,6 +4,8 @@
 */
 
 #include <ESP8266WiFi.h>
+#include <SPI.h>
+#include "Adafruit_MAX31856.h"
 
 #ifndef DEVSSID
 #define DEVSSID "your-ssid"
@@ -11,83 +13,98 @@
 #endif
 
 const char* ssid     = DEVSSID;
-const char* password = DEVPSK;
+const char* ssid_pass = DEVPSK;
 
-const char* host = "djxmmx.net";
-const uint16_t port = 17;
+WiFiClient net;
+
+unsigned long lastMillis = 0;
+
+// Use software SPI: CS, DI, DO, CLK
+Adafruit_MAX31856 maxim = Adafruit_MAX31856(15, 13, 12,14);
+// use hardware SPI, just pass in the CS pin
+//Adafruit_MAX31856 maxim = Adafruit_MAX31856(15);
 
 void setup() {
   Serial.begin(115200);
 
-  // pickup 
+   WiFi.begin(ssid, ssid_pass);
 
-  // We start by connecting to a WiFi network
+  // Note: Local domain names (e.g. "Computer.local" on OSX) are not supported by Arduino.
+  // You need to set the IP address directly.
+//  client.begin("[B]192.168.2.28[/B]", 1883, net);
+//  client.onMessage(messageReceived);
+//
+//  connect();
 
-  Serial.println();
-  Serial.println();
-  Serial.print("Connecting to ");
-  Serial.println(ssid);
+  Serial.println("MAX31856 thermocouple test");
+  maxim.begin();
 
-  /* Explicitly set the ESP8266 to be a WiFi-client, otherwise, it by default,
-     would try to act as both a client and an access-point and could cause
-     network-issues with your other WiFi-devices on your WiFi-network. */
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid, password);
-
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
-
-  Serial.println("");
-  Serial.println("WiFi connected");
-  Serial.println("IP address: ");
-  Serial.println(WiFi.localIP());
+  maxim.setThermocoupleType(MAX31856_TCTYPE_K);
 }
 
 void loop() {
-  Serial.print("connecting to ");
-  Serial.print(host);
-  Serial.print(':');
-  Serial.println(port);
 
-  // Use WiFiClient class to create TCP connections
-  WiFiClient client;
-  if (!client.connect(host, port)) {
-    Serial.println("connection failed");
-    delay(5000);
-    return;
+  float cjTemp, thTemp;
+
+  // Get both cold junction and thermocouple temperatures
+  cjTemp = cToF(maxim.readCJTemperature());
+  thTemp = cToF(maxim.readThermocoupleTemperature());
+  Serial.printf("\nCold Junction Temp: %f, Thermocouple Temp : %f", cjTemp, thTemp);
+
+  // Check and print any faults
+  uint8_t fault = maxim.readFault();
+  if (fault) {
+    if (fault & MAX31856_FAULT_CJRANGE) Serial.println("Cold Junction Range Fault");
+    if (fault & MAX31856_FAULT_TCRANGE) Serial.println("Thermocouple Range Fault");
+    if (fault & MAX31856_FAULT_CJHIGH)  Serial.println("Cold Junction High Fault");
+    if (fault & MAX31856_FAULT_CJLOW)   Serial.println("Cold Junction Low Fault");
+    if (fault & MAX31856_FAULT_TCHIGH)  Serial.println("Thermocouple High Fault");
+    if (fault & MAX31856_FAULT_TCLOW)   Serial.println("Thermocouple Low Fault");
+    if (fault & MAX31856_FAULT_OVUV)    Serial.println("Over/Under Voltage Fault");
+    if (fault & MAX31856_FAULT_OPEN)    Serial.println("Thermocouple Open Fault");
+  }
+  delay(600000);
+
+//  client.loop();
+//  delay(10);  // <- fixes some issues with WiFi stability
+//
+//  if (!client.connected()) {
+//    connect();
+//  }
+//
+//  // publish a message roughly every second.
+//  if (millis() - lastMillis > 1000) {
+//    lastMillis = millis();
+//    client.publish("/temperature", String(maxim.readThermocoupleTemperature()));
+//  }
+}
+
+float cToF(float c) {
+  if (isnan(c)) {
+    return c; // can't convert it
+  }
+  return (9.0 / 5.0) * c + 32.0;
+}
+
+void messageReceived(String &topic, String &payload) {
+  Serial.println("incoming: " + topic + " - " + payload);
+}
+
+void connect() {
+  Serial.print("checking wifi...");
+  while (WiFi.status() != WL_CONNECTED) {
+    Serial.print(".");
+    delay(1000);
   }
 
-  // This will send a string to the server
-  Serial.println("sending data to server");
-  if (client.connected()) {
-    client.println("hello from ESP8266");
-  }
-
-  // wait for data to be available
-  unsigned long timeout = millis();
-  while (client.available() == 0) {
-    if (millis() - timeout > 5000) {
-      Serial.println(">>> Client Timeout !");
-      client.stop();
-      delay(60000);
-      return;
-    }
-  }
-
-  // Read all the lines of the reply from server and print them to Serial
-  Serial.println("receiving from remote server");
-  // not testing 'client.connected()' since we do not need to send data here
-  while (client.available()) {
-    char ch = static_cast<char>(client.read());
-    Serial.print(ch);
-  }
-
-  // Close the connection
-  Serial.println();
-  Serial.println("closing connection");
-  client.stop();
-
-  delay(300000); // execute once every 5 minutes, don't flood remote service
+//  Serial.print("\nconnecting...");
+//  while (!client.connect("admin", "admin", "admin")) {
+//    Serial.print(".");
+//    delay(1000);
+//  }
+//
+//  Serial.println("\nconnected!");
+//
+//  client.subscribe("/temperature");
+  // client.unsubscribe("/temperature");
 }
