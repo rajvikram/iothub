@@ -59,4 +59,5 @@ IPQoS cs0 cs0
 - Compile and run the code on the board.
 
 
-
+#### Notes:
+- Once ESP.deepSleep() is used in the code, we need to have GPIO16 and the RST pin connected as shown [her](https://randomnerdtutorials.com/esp8266-deep-sleep-with-arduino-ide/) .*However* you can NOT flash code if the pins are connected. So the pins should be connected AFTER the code is flashed.
