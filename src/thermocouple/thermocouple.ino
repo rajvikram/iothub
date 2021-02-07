@@ -16,7 +16,7 @@
 #define INFLUXDB_URL  "http://192.168.2.120:8086"
 
 // How frequently will this device update it's data  
-#define LOOP_DELAY     5e6  // For deep sleep this is in microsecs
+#define LOOP_DELAY     600e6  // For deep sleep this is in microsecs
 
 const char* ssid     = DEVSSID;
 const char* ssid_pass = DEVPSK;
@@ -83,6 +83,7 @@ void loop() {
   // Write data
   influxdb_client.writePoint(deviceData);
 
+  Serial.println("");
   // Wait for bit before updating again
   //delay(LOOP_DELAY);
   ESP.deepSleep(LOOP_DELAY);
