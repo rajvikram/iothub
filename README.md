@@ -50,7 +50,11 @@ IPQoS cs0 cs0
 - Configure the Arduino IDE to support the ESP8266 board and install the following dep libraries
 	- Adafruit MAX31856 
 	- Influxdb client (v3.x)
-- Configure your Wifi SSID and password in your env variables, DEVSSID and DEVPSK
+- Configure your Wifi SSID and password as compiler flags that get picked up during compile. They need to be in specified a file called *platform.local.txt* with the following line:
+	`compiler.cpp.extra_flags=-DDEVSSID="*****" -DDEVPSK="********"`
+  The location of the file seems to change depending on the version of arduino IDE but it needs to be in the same directory as the *platform.txt* file. The two known locations are:
+	- ~/snap/arduino/current/.arduino15/packages/esp8266/hardware/esp8266/2.7.3/
+	- ~/snap/arduino/current/.arduino15/packages/esp8266/hardware/esp8266/2.7.4/
 - Configure the iothub server address correctly. 
 - Compile and run the code on the board.
 

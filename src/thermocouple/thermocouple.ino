@@ -9,17 +9,19 @@
 #include "InfluxDb.h"
 
 #ifndef DEVSSID
-#define DEVSSID "your-ssid"
-#define DEVPSK  "your-password"
+#define DEVSSID       "your-ssid"
+#define DEVPSK        "your-password"
 #endif
 
+#define INFLUXDB_URL  "http://192.168.2.120:8086"
+
 // How frequently will this device update it's data  
-#define DEV_LOOP_DELAY  5000 
+#define LOOP_DELAY     5e6  // For deep sleep this is in microsecs
 
 const char* ssid     = DEVSSID;
 const char* ssid_pass = DEVPSK;
 
-const char* influxdb_url = "http://192.168.2.120:8086";
+const char* influxdb_url = INFLUXDB_URL;
 const char* influxdb_db = "iot";
 
 WiFiClient net;
@@ -36,7 +38,7 @@ Adafruit_MAX31856 maxim = Adafruit_MAX31856(15, 13, 12, 14);
 void setup() {
   Serial.begin(115200);
 
-   WiFi.begin(ssid, ssid_pass);
+  WiFi.begin(ssid, ssid_pass);
 
   Serial.println("MAX31856 thermocouple test");
   maxim.begin();
@@ -45,6 +47,9 @@ void setup() {
 }
 
 void loop() {
+
+  // make sure we are connected to Wifi
+  connect();
 
   float cjTemp, hjTemp;
 
@@ -77,8 +82,10 @@ void loop() {
   
   // Write data
   influxdb_client.writePoint(deviceData);
-  
-  delay(DEV_LOOP_DELAY);
+
+  // Wait for bit before updating again
+  //delay(LOOP_DELAY);
+  ESP.deepSleep(LOOP_DELAY);
 
 
 }
@@ -100,15 +107,4 @@ void connect() {
     Serial.print(".");
     delay(1000);
   }
-
-//  Serial.print("\nconnecting...");
-//  while (!client.connect("admin", "admin", "admin")) {
-//    Serial.print(".");
-//    delay(1000);
-//  }
-//
-//  Serial.println("\nconnected!");
-//
-//  client.subscribe("/temperature");
-  // client.unsubscribe("/temperature");
 }
