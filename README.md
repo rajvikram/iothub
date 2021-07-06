@@ -51,10 +51,11 @@ IPQoS cs0 cs0
 	- Check influx is up by running `influx` cli client on Pi zero. You should also be able to connect to the 8086 port from an external machine.
 	- Create the `iot` database as `create database iot`
 	- If data is published from the device, it will be under the `temperature` table and you can check this by doing a `SELECT * FROM temperature`
+	
 
 - For Grafana follow instructions for v8.0.0 for *Debian ARMv6* : https://grafana.com/grafana/download/8.0.0?platform=arm
 	- Once grafana is installed you should be able to access it external at http://iothub.local:3000
-	- Create dashboard with InfluxDB as datasource and essentially create a query which says `SELECT hot,cold FROM temperature WHERE device='solar_oven' OR import the dashboard JSON file in this repo.
+	- Create dashboard with InfluxDB as datasource and essentially create a query which says `SELECT hot,cold FROM temperature WHERE device='solar_oven' OR import the dashboard JSON file in this repo. The dashboard is color coded correctly and should just work out of the box. Some editing maybe required.
 
 #### [2] To compile and run the thermocouple code in src/thermocouple one needs the arduino IDE with esp8266 board support.
 - Configure the Arduino IDE to support the ESP8266 board and install the following dep libraries
