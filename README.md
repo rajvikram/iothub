@@ -50,6 +50,7 @@ IPQoS cs0 cs0
 - For Influx follow these instructions: https://pimylifeup.com/raspberry-pi-influxdb/ 
 	- Check influx is up by running `influx` cli client on Pi zero. You should also be able to connect to the 8086 port from an external machine.
 	- Create the `iot` database as `create database iot`
+	- If data is published from the device, it will be under the `temperature` table and you can check this by doing a `SELECT * FROM temperature`
 
 - For Grafana follow instructions for v8.0.0 for *Debian ARMv6* : https://grafana.com/grafana/download/8.0.0?platform=arm
 	- Once grafana is installed you should be able to access it external at http://iothub.local:3000
