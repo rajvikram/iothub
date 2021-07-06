@@ -13,7 +13,7 @@
 #define DEVPSK        "your-password"
 #endif
 
-#define INFLUXDB_URL  "http://192.168.2.120:8086"
+#define INFLUXDB_URL  "http://192.168.68.120:8086"
 
 // How frequently will this device update it's data  
 #define LOOP_DELAY     600e6  // For deep sleep this is in microsecs

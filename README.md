@@ -45,6 +45,15 @@ IPQoS cs0 cs0
 ```
 - Eject SD card from host and boot Pi Zero with it. You should be able to `ssh pi@iothub.local` and get a responsive console
 
+#### Install Influx and grafana on Raspberry Pi.
+
+- For Influx follow these instructions: https://pimylifeup.com/raspberry-pi-influxdb/ 
+	- Check influx is up by running `influx` cli client on Pi zero. You should also be able to connect to the 8086 port from an external machine.
+	- Create the `iot` database as `create database iot`
+
+- For Grafana follow instructions for v8.0.0 for *Debian ARMv6* : https://grafana.com/grafana/download/8.0.0?platform=arm
+	- Once grafana is installed you should be able to access it external at http://iothub.local:3000
+	- Create dashboard with InfluxDB as datasource and essentially create a query which says `SELECT hot,cold FROM temperature WHERE device='solar_oven' OR import the dashboard JSON file in this repo.
 
 #### [2] To compile and run the thermocouple code in src/thermocouple one needs the arduino IDE with esp8266 board support.
 - Configure the Arduino IDE to support the ESP8266 board and install the following dep libraries
