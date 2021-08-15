@@ -1,6 +1,6 @@
 /*
-    This sketch establishes a TCP connection to a "quote of the day" service.
-    It sends a "hello" message, and then prints received data.
+    This sketch reads the theermocouple temperature every LOOP_DELAY microsecs and publishes
+    the data to an Influx db server
 */
 
 #include <ESP8266WiFi.h>
